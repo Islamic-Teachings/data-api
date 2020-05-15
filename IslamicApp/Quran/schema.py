@@ -1,22 +1,38 @@
 import graphene
 from graphene import Schema, relay, resolve_only_args
-from graphene_django import DjangoConnectionField, DjangoObjectType
+from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
 
 from .models import (
-    QuranModel
+    QuranModel,
+    SurahModel,
+    AyahModel,
+    AyahRecitation,
+    TafseerModel
 )
 
-class Quran(DjangoObjectType):
+class QuranNode(DjangoObjectType):
     class Meta:
         model = QuranModel
         interfaces = (relay.Node,)
 
-    @classmethod
-    def get_node(cls, info):
-        node = QuranModel.objects.all()[0]
-        return node
+class SurahNode(DjangoObjectType):
+    class Meta:
+        model = SurahModel
+        filter_fields = {
+            'juza': ['exact'],
+            'arabic_name': ['exact'],
+            'english_name': ['exact']
+        }
+        interfaces = (relay.Node,)
 
-class Query(graphene.ObjectType):
-    quran = graphene.List(Quran)
+class AyahNode(DjangoObjectType):
+    class Meta:
+        model = AyahModel
+        interfaces = (relay.Node,)
 
-schema = graphene.Schema(query=Query)
+class Query(object):
+    quran = relay.Node.Field(QuranNode)
+    surah = relay.Node.Field(SurahNode)
+    ayat = relay.Node.Field(AyahNode)
+    allSurahs = DjangoFilterConnectionField(SurahNode)

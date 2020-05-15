@@ -1,16 +1,40 @@
-version: '3.3'
+version: '3.5'
+networks:
+  islamic-network:
+    name: islamic-network
 services:
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8087:8080
   islamic-db:
     image: postgres
     restart: always
+    networks:
+      - islamic-network
     ports:
       - 5432:5432
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: password
       POSTGRES_DB: islamic-db
+  adminer:
+    image: adminer
+    restart: always
+    depends_on:
+      - islamic-db
+    links:
+      - islamic-db
+    networks:
+      - islamic-network
+    ports:
+      - 8087:8080
+  # islamic-app:
+  #   build: .
+  #   restart: always
+  #   depends_on:
+  #     - islamic-db
+  #   links:
+  #     - islamic-db
+  #   networks:
+  #     - islamic-network
+  #   environment:
+  #     WAIT_HOSTS: islamic-db:5432
+  #   ports:
+  #     - 9000:8000

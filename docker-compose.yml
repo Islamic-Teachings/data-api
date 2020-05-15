@@ -1,0 +1,16 @@
+version: '3.3'
+services:
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8087:8080
+  islamic-db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: islamic-db
